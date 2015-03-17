@@ -49,6 +49,15 @@ public class Neighborhood {
 		return false;
 	}
 
+	public int count() {
+		int count = 0;
+		for (int i = 0; i < getHeight(); i++)
+			for (int j = 0; j < getWidth(); j++)
+				if (neighborhood[j][i])
+					count++;
+		return count;
+	}
+
 	public String toString(char alive, char dead) {
 		String value = "Neighborhood [width: " + neighborhood[0].length
 				+ ", height: " + neighborhood.length + "]";
@@ -75,6 +84,8 @@ public class Neighborhood {
 		for (int i = 0; i < getHeight(); i++)
 			for (int j = 0; j < getWidth(); j++)
 				if (neighborhood[j][i]) {
+					// Add 1 to all surrounding cells in the neighbor count,
+					// being mindful of walls.
 					if (j != 0) {
 						if (i != 0)
 							neighborCount[j - 1][i - 1] += 1;
@@ -94,13 +105,15 @@ public class Neighborhood {
 							neighborCount[j + 1][i + 1] += 1;
 					}
 				}
+		// Store the result of each cell based on how many neighbors it has
 		for (int i = 0; i < getHeight(); i++)
 			for (int j = 0; j < getWidth(); j++) {
 				if (neighborCount[j][i] == 3)
 					neighborhood[j][i] = true;
 				else if (neighborCount[j][i] == 2 && neighborhood[j][i])
 					neighborhood[j][i] = true;
-				else neighborhood[j][i] = false;
+				else
+					neighborhood[j][i] = false;
 			}
 		return neighborhood;
 	}
