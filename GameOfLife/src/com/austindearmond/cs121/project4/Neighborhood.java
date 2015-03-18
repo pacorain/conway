@@ -25,11 +25,11 @@ public class Neighborhood {
 	}
 
 	public int getWidth() {
-		return neighborhood.length;
+		return neighborhood[0].length;
 	}
 
 	public int getHeight() {
-		return neighborhood[0].length;
+		return neighborhood.length;
 	}
 
 	public boolean isAlive(int x, int y) throws ArrayIndexOutOfBoundsException {
@@ -64,7 +64,7 @@ public class Neighborhood {
 		for (int i = 0; i < getHeight(); i++) {
 			value = value.concat("\n");
 			for (int j = 0; j < getWidth(); j++) {
-				if (neighborhood[j][i])
+				if (neighborhood[i][j])
 					value = value.concat(Character.toString(alive));
 				else
 					value = value.concat(Character.toString(dead));
@@ -75,45 +75,45 @@ public class Neighborhood {
 
 	@Override
 	public String toString() {
-		return toString('X', ' ');
+		return toString('X', '.');
 	}
 
 	public boolean[][] nextGeneration() {
 		// Go through and add up the elements' neighbors
-		int[][] neighborCount = new int[getWidth()][getHeight()];
+		int[][] neighborCount = new int[getHeight()][getWidth()];
 		for (int i = 0; i < getHeight(); i++)
 			for (int j = 0; j < getWidth(); j++)
-				if (neighborhood[j][i]) {
+				if (neighborhood[i][j]) {
 					// Add 1 to all surrounding cells in the neighbor count,
 					// being mindful of walls.
 					if (j != 0) {
 						if (i != 0)
-							neighborCount[j - 1][i - 1] += 1;
-						neighborCount[j - 1][i] += 1;
+							neighborCount[i - 1][j - 1] += 1;
+						neighborCount[i][j - 1] += 1;
 						if (i != getHeight() - 1)
-							neighborCount[j - 1][i + 1] += 1;
+							neighborCount[i + 1][j - 1] += 1;
 					}
 					if (i != 0)
-						neighborCount[j][i - 1] += 1;
+						neighborCount[i - 1][j] += 1;
 					if (i != getHeight() - 1)
-						neighborCount[j][i + 1] += 1;
+						neighborCount[i + 1][j] += 1;
 					if (j != getWidth() - 1) {
 						if (i != 0)
-							neighborCount[j + 1][i - 1] += 1;
-						neighborCount[j + 1][i] += 1;
+							neighborCount[i - 1][j + 1] += 1;
+						neighborCount[i][j + 1] += 1;
 						if (i != getHeight() - 1)
-							neighborCount[j + 1][i + 1] += 1;
+							neighborCount[i + 1][j + 1] += 1;
 					}
 				}
 		// Store the result of each cell based on how many neighbors it has
 		for (int i = 0; i < getHeight(); i++)
 			for (int j = 0; j < getWidth(); j++) {
-				if (neighborCount[j][i] == 3)
-					neighborhood[j][i] = true;
-				else if (neighborCount[j][i] == 2 && neighborhood[j][i])
-					neighborhood[j][i] = true;
+				if (neighborCount[i][j] == 3)
+					neighborhood[i][j] = true;
+				else if (neighborCount[i][j] == 2 && neighborhood[i][j])
+					neighborhood[i][j] = true;
 				else
-					neighborhood[j][i] = false;
+					neighborhood[i][j] = false;
 			}
 		return neighborhood;
 	}
