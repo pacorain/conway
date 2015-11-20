@@ -3,24 +3,29 @@ package com.austindearmond.cs121.project4;
 import java.util.Random;
 
 public class Neighborhood {
-	boolean[][] neighborhood;
+	Cell[][] neighborhood;
 
-	public Neighborhood(boolean[][] boolArray) {
-		neighborhood = boolArray;
+	public Neighborhood(Cell[][] cellArray) {
+		neighborhood = cellArray;
 	}
 
 	public Neighborhood(int width, int height) {
-		neighborhood = new boolean[height][width];
+		neighborhood = new Cell[height][width];
 	}
 
 	public void randomize() {
-		Random random = new Random();
-		for (int i = 0; i < getHeight(); i++)
-			for (int j = 0; j < getWidth(); j++)
-				neighborhood[j][i] = random.nextBoolean();
+		for (int y = 0; y < getHeight(); y++)
+			for (int x = 0; x < getWidth(); x++)
+				neighborhood[x][y] = getRandomCell();
 	}
 
-	public boolean[][] toBoolArray() {
+	private Cell getRandomCell() {
+		Random random = new Random();
+		boolean alive = random.nextBoolean();
+		return new Cell(alive);
+	}
+
+	public Cell[][] toCells() {
 		return neighborhood;
 	}
 
@@ -33,18 +38,18 @@ public class Neighborhood {
 	}
 
 	public boolean isAlive(int x, int y) throws ArrayIndexOutOfBoundsException {
-		return neighborhood[x][y];
+		return neighborhood[x][y].isAlive();
 	}
 
 	public void setAlive(int x, int y, boolean life) {
-		neighborhood[x][y] = life;
+		neighborhood[x][y].setAlive(life);
 	}
 
 	public boolean hasCitizen() {
 		// Check each cell for a citizen.
 		for (int i = 0; i < neighborhood.length; i++)
 			for (int j = 0; j < neighborhood[i].length; j++)
-				if (neighborhood[i][j])
+				if (neighborhood[i][j].isAlive())
 					return true;
 		return false;
 	}
@@ -53,7 +58,7 @@ public class Neighborhood {
 		int count = 0;
 		for (int i = 0; i < getHeight(); i++)
 			for (int j = 0; j < getWidth(); j++)
-				if (neighborhood[j][i])
+				if (neighborhood[j][i].isAlive())
 					count++;
 		return count;
 	}
@@ -64,7 +69,7 @@ public class Neighborhood {
 		for (int i = 0; i < getHeight(); i++) {
 			value = value.concat("\n");
 			for (int j = 0; j < getWidth(); j++) {
-				if (neighborhood[i][j])
+				if (neighborhood[i][j].isAlive())
 					value = value.concat(Character.toString(alive));
 				else
 					value = value.concat(Character.toString(dead));
@@ -78,12 +83,12 @@ public class Neighborhood {
 		return toString('X', '.');
 	}
 
-	public boolean[][] nextGeneration() {
+	public Cell[][] nextGeneration() {
 		// Go through and add up the elements' neighbors
 		int[][] neighborCount = new int[getHeight()][getWidth()];
 		for (int i = 0; i < getHeight(); i++)
 			for (int j = 0; j < getWidth(); j++)
-				if (neighborhood[i][j]) {
+				if (neighborhood[i][j].isAlive()) {
 					// Add 1 to all surrounding cells in the neighbor count,
 					// being mindful of walls.
 					if (j != 0) {
@@ -109,11 +114,11 @@ public class Neighborhood {
 		for (int i = 0; i < getHeight(); i++)
 			for (int j = 0; j < getWidth(); j++) {
 				if (neighborCount[i][j] == 3)
-					neighborhood[i][j] = true;
-				else if (neighborCount[i][j] == 2 && neighborhood[i][j])
-					neighborhood[i][j] = true;
+					neighborhood[i][j].setAlive(true);
+				else if (neighborCount[i][j] == 2 && neighborhood[i][j].isAlive())
+					neighborhood[i][j].setAlive(true);
 				else
-					neighborhood[i][j] = false;
+					neighborhood[i][j].setAlive(true);
 			}
 		return neighborhood;
 	}
