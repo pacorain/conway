@@ -22,5 +22,24 @@ public class Cell implements Cloneable {
 	public void setAlive(boolean alive) {
 		this.alive = alive;
 	}
+
+	@Override
+	public int hashCode() {
+		return alive ? 3593 : 3607;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Cell other = (Cell) obj;
+		if (alive != other.alive)
+			return false;
+		return true;
+	}
 	
 }
