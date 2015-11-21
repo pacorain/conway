@@ -145,7 +145,7 @@ public class Neighborhood {
 				}
 			}
 		// Store the result of each cell based on how many neighbors it has
-		Neighborhood target = new Neighborhood(this);
+		Neighborhood target = new Neighborhood(width, height);
 		for (int y = 0; y < getHeight(); y++)
 			for (int x = 0; x < getWidth(); x++) {
 				point = Point.atX(x).atY(y);
