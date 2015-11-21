@@ -39,7 +39,8 @@ public class Neighborhood {
 	}
 
 	public Cell cellAt(Point point) {
-		if (point.getX() >= width || point.getY() >= height)
+		if (point.getX() >= width || point.getX() < 0 
+				|| point.getY() >= height || point.getY() < 0)
 			throw new PointIndexOutOfBoundsException();
 		return neighborhood.get(point);
 	}
@@ -113,49 +114,36 @@ public class Neighborhood {
 			return false;
 		return true;
 	}
-
+	
 	public Neighborhood nextGeneration() {
-		// Go through and add up the elements' neighbors
-		int[][] neighborCount = new int[getHeight()][getWidth()];
-		Point point;
-		for (int y = 0; y < getHeight(); y++)
-			for (int x = 0; x < getWidth(); x++) {
-				point = Point.atX(x).atY(y);
-				if (cellAt(point).isAlive()) {
-					// Add 1 to all surrounding cells in the neighbor count,
-					// being mindful of walls.
-					if (x != 0) {
-						if (y != 0)
-							neighborCount[y - 1][x - 1] += 1;
-						neighborCount[y][x - 1] += 1;
-						if (y != getHeight() - 1)
-							neighborCount[y + 1][x - 1] += 1;
-					}
-					if (y != 0)
-						neighborCount[y - 1][x] += 1;
-					if (y != getHeight() - 1)
-						neighborCount[y + 1][x] += 1;
-					if (x != getWidth() - 1) {
-						if (y != 0)
-							neighborCount[y - 1][x + 1] += 1;
-						neighborCount[y][x + 1] += 1;
-						if (y != getHeight() - 1)
-							neighborCount[y + 1][x + 1] += 1;
-					}
-				}
-			}
-		// Store the result of each cell based on how many neighbors it has
-		Neighborhood target = new Neighborhood(width, height);
-		for (int y = 0; y < getHeight(); y++)
-			for (int x = 0; x < getWidth(); x++) {
-				point = Point.atX(x).atY(y);
-				if (neighborCount[y][x] == 3)
-					target.cellAt(point).setAlive(true);
-				else if (neighborCount[y][x] == 2 && cellAt(point).isAlive())
-					target.cellAt(point).setAlive(true);
-				else
-					target.cellAt(point).setAlive(false);
-			}
-		return target;
+		Neighborhood newNeighborhood = new Neighborhood(width, height);
+		for (Point point : getPoints()) {
+			boolean alive = isAliveNextGeneration(point);
+			newNeighborhood.cellAt(point).setAlive(alive);
+		}
+		return newNeighborhood;
+	}
+	
+	private boolean isAliveNextGeneration(Point point) {
+		return
+				numberOfNeighbors(point) == 3
+				|| (numberOfNeighbors(point) == 2 && cellAt(point).isAlive());
+	}
+	
+	private int numberOfNeighbors(Point point) {
+		int neighborCount = cellAt(point).isAlive() ? -1 : 0;
+		for (int y = point.getY() - 1; y <= point.getY() + 1; y++)
+			for (int x = point.getX() - 1; x <= point.getX() + 1; x++)
+				if (isNeighbor(Point.atX(x).atY(y)))
+					neighborCount++;
+		return neighborCount;
+	}
+
+	private boolean isNeighbor(Point point) {
+		try {
+			return cellAt(point).isAlive() == true;
+		} catch (IndexOutOfBoundsException e) {
+			return false;
+		}
 	}
 }
