@@ -1,6 +1,6 @@
 package com.austindearmond.cs121.project4;
 
-public class Cell implements Cloneable {
+public class Cell {
 	private boolean alive;
 	
 	public Cell() {
