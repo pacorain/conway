@@ -54,7 +54,6 @@ public class Neighborhood {
 	}
 
 	public boolean hasCitizen() {
-		// Check each cell for a citizen.
 		for (Point point : getPoints())
 			if (cellAt(point).isAlive())
 				return true;
@@ -125,11 +124,17 @@ public class Neighborhood {
 	}
 	
 	private boolean isAliveNextGeneration(Point point) {
-		return
-				numberOfNeighbors(point) == 3
-				|| (numberOfNeighbors(point) == 2 && cellAt(point).isAlive());
+		return hasThreeNeighbors(point) || isAliveWithTwoNeighbors(point);
 	}
-	
+
+	private boolean hasThreeNeighbors(Point point) {
+		return numberOfNeighbors(point) == 3;
+	}
+
+	private boolean isAliveWithTwoNeighbors(Point point) {
+		return numberOfNeighbors(point) == 2 && cellAt(point).isAlive();
+	}
+
 	private int numberOfNeighbors(Point point) {
 		int neighborCount = cellAt(point).isAlive() ? -1 : 0;
 		for (int y = point.getY() - 1; y <= point.getY() + 1; y++)
@@ -141,7 +146,7 @@ public class Neighborhood {
 
 	private boolean isNeighbor(Point point) {
 		try {
-			return cellAt(point).isAlive() == true;
+			return cellAt(point).isAlive();
 		} catch (IndexOutOfBoundsException e) {
 			return false;
 		}
