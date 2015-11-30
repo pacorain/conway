@@ -1,10 +1,21 @@
 package com.austindearmond.cs121.project4;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
 public class Neighborhood {
+	private static final Point[] NEIGHBOR_OFFSETS = {
+		Point.atX(-1).atY(-1),
+		Point.atX(0).atY(-1),
+		Point.atX(1).atY(-1),
+		Point.atX(-1).atY(0),
+		Point.atX(1).atY(0),
+		Point.atX(-1).atY(1),
+		Point.atX(0).atY(1),
+		Point.atX(1).atY(1)
+	};
 	private final HashMap<Point, Cell> neighborhood;
 	private int width;
 	private int height;
@@ -39,10 +50,14 @@ public class Neighborhood {
 	}
 
 	public Cell cellAt(Point point) {
-		if (point.getX() >= width || point.getX() < 0 
-				|| point.getY() >= height || point.getY() < 0)
+		if (isOutOfBounds(point))
 			throw new PointIndexOutOfBoundsException();
 		return neighborhood.get(point);
+	}
+
+	private boolean isOutOfBounds(Point point) {
+		return point.getX() >= width || point.getX() < 0 
+				|| point.getY() >= height || point.getY() < 0;
 	}
 
 	public int getWidth() {
@@ -134,21 +149,38 @@ public class Neighborhood {
 	private boolean isOccupiedWithTwoNeighbors(Point point) {
 		return numberOfNeighbors(point) == 2 && cellAt(point).isOccupied();
 	}
-
+	
 	private int numberOfNeighbors(Point point) {
-		int neighborCount = cellAt(point).isOccupied() ? -1 : 0;
-		for (int y = point.getY() - 1; y <= point.getY() + 1; y++)
-			for (int x = point.getX() - 1; x <= point.getX() + 1; x++)
-				if (isNeighbor(Point.atX(x).atY(y)))
-					neighborCount++;
+		int neighborCount = 0;
+		for (Point neighbor : getNeighbors(point)) 
+			if (cellAt(neighbor).isOccupied())
+				neighborCount++;
 		return neighborCount;
 	}
 
-	private boolean isNeighbor(Point point) {
-		try {
-			return cellAt(point).isOccupied();
-		} catch (IndexOutOfBoundsException e) {
-			return false;
+	private Set<Point> getNeighbors(Point point) {
+		Set<Point> neighbors = getSurroundingPoints(point);
+		removeOutOfBoundsPoints(neighbors);
+		return neighbors;
+	}
+
+	private Set<Point> getSurroundingPoints(Point originalPoint) {
+		Set<Point> surroundingPoints = new HashSet<Point>();
+		Point newPoint;
+		int offsetX;
+		int offsetY;
+		for (Point offset : NEIGHBOR_OFFSETS) {
+			offsetX = originalPoint.getX() + offset.getX();
+			offsetY = originalPoint.getY() + offset.getY();
+			newPoint = Point.atX(offsetX).atY(offsetY);
+			surroundingPoints.add(newPoint);
 		}
+		return surroundingPoints;
+	}
+
+	private void removeOutOfBoundsPoints(Set<Point> points) {
+		for (Point surroundingPoint : new HashSet<Point>(points)) 
+			if (isOutOfBounds(surroundingPoint))
+				points.remove(surroundingPoint);
 	}
 }
