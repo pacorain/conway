@@ -30,7 +30,7 @@ public class Neighborhood {
 		Random random = new Random();
 		for (Point point : getPoints()) {
 			boolean alive = random.nextBoolean();
-			cellAt(point).setAlive(alive);
+			cellAt(point).setOccupied(alive);
 		}
 	}
 
@@ -53,19 +53,24 @@ public class Neighborhood {
 		return height;
 	}
 
-	public boolean hasCitizen() {
+	public boolean isEmpty() {
 		for (Point point : getPoints())
-			if (cellAt(point).isAlive())
-				return true;
-		return false;
+			if (cellAt(point).isOccupied())
+				return false;
+		return true;
 	}
 
 	public int count() {
 		int count = 0;
 		for (Point point : getPoints())
-			if (cellAt(point).isAlive())
+			if (cellAt(point).isOccupied())
 				count++;
 		return count;
+	}
+
+	@Override
+	public String toString() {
+		return toString('X', '.');
 	}
 
 	public String toString(char alive, char dead) {
@@ -75,18 +80,13 @@ public class Neighborhood {
 			value = value.concat("\n");
 			for (int x = 0; x < width; x++) {
 				point = Point.atX(x).atY(y);
-				if (cellAt(point).isAlive())
+				if (cellAt(point).isOccupied())
 					value = value.concat(Character.toString(alive));
 				else
 					value = value.concat(Character.toString(dead));
 			}
 		}
 		return value;
-	}
-
-	@Override
-	public String toString() {
-		return toString('X', '.');
 	}
 
 	@Override
@@ -117,26 +117,26 @@ public class Neighborhood {
 	public Neighborhood nextGeneration() {
 		Neighborhood newNeighborhood = new Neighborhood(width, height);
 		for (Point point : getPoints()) {
-			boolean alive = isAliveNextGeneration(point);
-			newNeighborhood.cellAt(point).setAlive(alive);
+			boolean alive = isOccupiedNextGeneration(point);
+			newNeighborhood.cellAt(point).setOccupied(alive);
 		}
 		return newNeighborhood;
 	}
 	
-	private boolean isAliveNextGeneration(Point point) {
-		return hasThreeNeighbors(point) || isAliveWithTwoNeighbors(point);
+	private boolean isOccupiedNextGeneration(Point point) {
+		return hasThreeNeighbors(point) || isOccupiedWithTwoNeighbors(point);
 	}
 
 	private boolean hasThreeNeighbors(Point point) {
 		return numberOfNeighbors(point) == 3;
 	}
 
-	private boolean isAliveWithTwoNeighbors(Point point) {
-		return numberOfNeighbors(point) == 2 && cellAt(point).isAlive();
+	private boolean isOccupiedWithTwoNeighbors(Point point) {
+		return numberOfNeighbors(point) == 2 && cellAt(point).isOccupied();
 	}
 
 	private int numberOfNeighbors(Point point) {
-		int neighborCount = cellAt(point).isAlive() ? -1 : 0;
+		int neighborCount = cellAt(point).isOccupied() ? -1 : 0;
 		for (int y = point.getY() - 1; y <= point.getY() + 1; y++)
 			for (int x = point.getX() - 1; x <= point.getX() + 1; x++)
 				if (isNeighbor(Point.atX(x).atY(y)))
@@ -146,7 +146,7 @@ public class Neighborhood {
 
 	private boolean isNeighbor(Point point) {
 		try {
-			return cellAt(point).isAlive();
+			return cellAt(point).isOccupied();
 		} catch (IndexOutOfBoundsException e) {
 			return false;
 		}
