@@ -121,11 +121,15 @@ public class Neighborhood {
 	
 	public Neighborhood getNextGeneration() {
 		Neighborhood newNeighborhood = new Neighborhood(width, height);
+		fillNextGeneration(newNeighborhood);
+		return newNeighborhood;
+	}
+
+	private void fillNextGeneration(Neighborhood newNeighborhood) {
 		for (Point point : getPoints()) {
 			boolean alive = isOccupiedNextGeneration(point);
 			newNeighborhood.cellAt(point).setOccupied(alive);
 		}
-		return newNeighborhood;
 	}
 	
 	private boolean isOccupiedNextGeneration(Point point) {
