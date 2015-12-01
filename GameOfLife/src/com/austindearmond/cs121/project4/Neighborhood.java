@@ -119,7 +119,7 @@ public class Neighborhood {
 		return true;
 	}
 	
-	public Neighborhood nextGeneration() {
+	public Neighborhood getNextGeneration() {
 		Neighborhood newNeighborhood = new Neighborhood(width, height);
 		for (Point point : getPoints()) {
 			boolean alive = isOccupiedNextGeneration(point);
