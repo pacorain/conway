@@ -6,16 +6,6 @@ import java.util.Random;
 import java.util.Set;
 
 public class Neighborhood {
-	private static final Point[] NEIGHBOR_OFFSETS = {
-		Point.atX(-1).atY(-1),
-		Point.atX(0).atY(-1),
-		Point.atX(1).atY(-1),
-		Point.atX(-1).atY(0),
-		Point.atX(1).atY(0),
-		Point.atX(-1).atY(1),
-		Point.atX(0).atY(1),
-		Point.atX(1).atY(1)
-	};
 	private final HashMap<Point, Cell> neighborhood;
 	private int width;
 	private int height;
@@ -143,14 +133,14 @@ public class Neighborhood {
 	}
 
 	private boolean hasThreeNeighbors(Point point) {
-		return numberOfNeighbors(point) == 3;
+		return numberOfOccupiedNeighbors(point) == 3;
 	}
 
 	private boolean isOccupiedWithTwoNeighbors(Point point) {
-		return numberOfNeighbors(point) == 2 && cellAt(point).isOccupied();
+		return numberOfOccupiedNeighbors(point) == 2 && cellAt(point).isOccupied();
 	}
 	
-	private int numberOfNeighbors(Point point) {
+	private int numberOfOccupiedNeighbors(Point point) {
 		int neighborCount = 0;
 		for (Point neighbor : getNeighbors(point)) 
 			if (cellAt(neighbor).isOccupied())
@@ -159,23 +149,9 @@ public class Neighborhood {
 	}
 
 	private Set<Point> getNeighbors(Point point) {
-		Set<Point> neighbors = getSurroundingPoints(point);
+		Set<Point> neighbors = point.getSurroundingPoints();
 		removeOutOfBoundsPoints(neighbors);
 		return neighbors;
-	}
-
-	private Set<Point> getSurroundingPoints(Point originalPoint) {
-		Set<Point> surroundingPoints = new HashSet<Point>();
-		Point newPoint;
-		int offsetX;
-		int offsetY;
-		for (Point offset : NEIGHBOR_OFFSETS) {
-			offsetX = originalPoint.getX() + offset.getX();
-			offsetY = originalPoint.getY() + offset.getY();
-			newPoint = Point.atX(offsetX).atY(offsetY);
-			surroundingPoints.add(newPoint);
-		}
-		return surroundingPoints;
 	}
 
 	private void removeOutOfBoundsPoints(Set<Point> points) {

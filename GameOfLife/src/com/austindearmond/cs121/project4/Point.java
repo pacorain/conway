@@ -1,6 +1,19 @@
 package com.austindearmond.cs121.project4;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Point {
+	private static final Point[] SURROUNDING_POINT_OFFSETS = {
+			Point.atX(-1).atY(-1),
+			Point.atX(0).atY(-1),
+			Point.atX(1).atY(-1),
+			Point.atX(-1).atY(0),
+			Point.atX(1).atY(0),
+			Point.atX(-1).atY(1),
+			Point.atX(0).atY(1),
+			Point.atX(1).atY(1)
+		};
 	private final int x;
 	private final int y;
 	
@@ -34,7 +47,15 @@ public class Point {
 		return y;
 	}
 	
-	
+	public Set<Point> getSurroundingPoints() {
+		Set<Point> surroundingPoints = new HashSet<Point>();
+		Point newPoint;
+		for (Point offset : SURROUNDING_POINT_OFFSETS) {
+			newPoint = Point.atX(x + offset.x).atY(y + offset.y);
+			surroundingPoints.add(newPoint);
+		}
+		return surroundingPoints;
+	}
 
 	@Override
 	public int hashCode() {
